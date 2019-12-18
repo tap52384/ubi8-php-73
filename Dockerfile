@@ -1,7 +1,7 @@
 # https://access.redhat.com/containers/?tab=images&get-method=unauthenticated#/registry.access.redhat.com/ubi8/php-73
 # https://github.com/sclorg/s2i-php-container/tree/master/7.3
 # https://access.redhat.com/containers/?architecture&tab=docker-file#/registry.access.redhat.com/ubi8/php-73/images/1-18
-# docker build --pull -t tap52384:ubi8-php-73 ~/code/ubi8-php-73
+# docker build --pull -t tap52384/ubi8-php-73:latest ~/code/ubi8-php-73
 FROM registry.access.redhat.com/ubi8/php-73
 
 # Add necessary labels
@@ -15,13 +15,10 @@ LABEL io.k8s.description="PHP 7.3 with Database Connectors" \
 # Change the Source-to-Image Scripts URL Environment Variable
 ENV STI_SCRIPTS_PATH=/opt/app-root/s2i/bin
 
-EXPOSE 8443
-
 # Switch to the root user
 USER 0
 
 COPY ./s2i/bin/ /opt/app-root/s2i/bin
-
 COPY ./etc /opt/app-root/etc/
 COPY ./src/*.rpm /opt/app-root/etc/
 
@@ -42,7 +39,7 @@ RUN cp /opt/app-root/etc/ubi7.repo /etc/yum.repos.d/ubi7.repo && \
     ARCH=$( /bin/arch ) && \
     yum --disableplugin=subscription-manager repolist > /dev/null && \
     echo 'Installing downloaded dependencies before yum install...' && \
-    rpm -i /opt/app-root/etc/net-snmp-libs-5.8-10.el8.x86_64.rpm \
+    yum install -y --setopt=tsflags=nodocs --disableplugin=subscription-manager /opt/app-root/etc/net-snmp-libs-5.8-10.el8.x86_64.rpm \
     /opt/app-root/etc/net-snmp-utils-5.8-10.el8.x86_64.rpm \
     /opt/app-root/etc/libyaml-devel-0.1.7-5.el8.x86_64.rpm && \
     echo 'Installing packages via yum...' && \
@@ -50,13 +47,13 @@ RUN cp /opt/app-root/etc/ubi7.repo /etc/yum.repos.d/ubi7.repo && \
     # diffutils installs cmp command
     # Download RedHat packages from here (requires free account)
     # https://access.redhat.com/downloads/content/package-browser
-    INSTALL_PKGS="diffutils fuse fuse-common fuse-libs gettext libzip libzip-devel nss_wrapper libaio libmcrypt libmcrypt-devel libss libyaml pcre-utf16 php-devel php-pear php-pecl-zip php-snmp unixODBC-devel" && \
+    INSTALL_PKGS="diffutils fuse fuse-common fuse-libs gettext libzip libzip-devel nss_wrapper libaio libmcrypt libmcrypt-devel libss libyaml pcre-utf16 php-devel php-pear php-pecl-zip php-snmp python36 unixODBC-devel" && \
     ACCEPT_EULA=Y yum install -y --setopt=tsflags=nodocs --disableplugin=subscription-manager $INSTALL_PKGS && \
     echo 'rpm -V $INSTALL_PKGS...' && \
     rpm -V $INSTALL_PKGS && \
     echo 'Installing manually downloaded packages...' && \
     # e2fsprogs is needed for msodbcsql17, but not available via yum
-    rpm -i /opt/app-root/etc/e2fsprogs-libs-1.44.6-3.el8.x86_64.rpm \
+    yum install -y --setopt=tsflags=nodocs --disableplugin=subscription-manager /opt/app-root/etc/e2fsprogs-libs-1.44.6-3.el8.x86_64.rpm \
     /opt/app-root/etc/libnsl-2.28-72.el8.x86_64.rpm \
     /opt/app-root/etc/e2fsprogs-1.44.6-3.el8.x86_64.rpm \
     # Needed for LDAP headers
@@ -73,9 +70,9 @@ RUN cp /opt/app-root/etc/ubi7.repo /etc/yum.repos.d/ubi7.repo && \
     echo 'rpm -V $INSTALL_PKGS...' && \
     # Install Oracle InstantClient (including SQL*Plus)
     echo "Installing Oracle InstantClient..." && \
-    rpm -i https://download.oracle.com/otn_software/linux/instantclient/195000/oracle-instantclient19.5-basic-19.5.0.0.0-1.x86_64.rpm && \
-    rpm -i https://download.oracle.com/otn_software/linux/instantclient/195000/oracle-instantclient19.5-devel-19.5.0.0.0-1.x86_64.rpm && \
-    rpm -i https://download.oracle.com/otn_software/linux/instantclient/195000/oracle-instantclient19.5-sqlplus-19.5.0.0.0-1.x86_64.rpm && \
+    yum install -y --setopt=tsflags=nodocs --disableplugin=subscription-manager https://download.oracle.com/otn_software/linux/instantclient/195000/oracle-instantclient19.5-basic-19.5.0.0.0-1.x86_64.rpm && \
+    yum install -y --setopt=tsflags=nodocs --disableplugin=subscription-manager https://download.oracle.com/otn_software/linux/instantclient/195000/oracle-instantclient19.5-devel-19.5.0.0.0-1.x86_64.rpm && \
+    yum install -y --setopt=tsflags=nodocs --disableplugin=subscription-manager https://download.oracle.com/otn_software/linux/instantclient/195000/oracle-instantclient19.5-sqlplus-19.5.0.0.0-1.x86_64.rpm && \
     echo "/usr/lib/oracle/19.5/client64/lib" > /etc/ld.so.conf.d/oracle-instantclient.conf && \
     ldconfig && \
     # ln -s /usr/lib64/libnsl.so.2.0.0 /usr/lib64/libnsl.so.1 && \
@@ -103,10 +100,9 @@ RUN cp /opt/app-root/etc/ubi7.repo /etc/yum.repos.d/ubi7.repo && \
     printf "\n" | pecl install yaml && \
     echo $PATH && \
     # Shows what extensions have INI files already specified
-    ls -al /etc/php.d/
-
+    ls -al /etc/php.d/ && \
     # Download the source for the current version of PHP as a tar.xz
-RUN PHP_SOURCE_VERSION=$(php -v | grep cli | cut -d ' ' -f 2) && \
+    PHP_SOURCE_VERSION=$(php -v | grep cli | cut -d ' ' -f 2) && \
     echo "PHP_SOURCE_VERSION : ${PHP_SOURCE_VERSION}" && \
     mkdir -p /usr/src/ && \
     curl -Lo /usr/src/php.tar.xz http://php.net/get/php-${PHP_SOURCE_VERSION}.tar.xz/from/this/mirror && \
