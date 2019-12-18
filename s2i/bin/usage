@@ -1,0 +1,4 @@
+#!/bin/sh
+## Run the existing s2i script
+/usr/libexec/s2i/usage
+exit $?
