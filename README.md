@@ -31,13 +31,14 @@ chmod u+x /usr/local/bin/s2i
 
 ```bash
 # You can build the image without having to clone the repository locally
+# Uses the "master" branch for building the image
 mkdir -p ~/code
 cd ~/code
 docker build --pull https://github.com/tap52384/ubi8-php-73.git -t tap52384:ubi8-php-73
 
 # Next, "re-build" the app using s2i (source-to-image)
 git clone -q https://github.com/tap52384/c-and-j-towing.git
-s2i build ~/code/c-and-j-towing/ tap52384:ubi8-php-73 tap52384:c-and-j-towing
+s2i build -e DOCUMENTROOT=/public/ ~/code/c-and-j-towing/ tap52384:ubi8-php-73 tap52384:c-and-j-towing
 
 # Stop and delete any containers based on the RedHat image
 docker rm -f $(docker ps -aq --filter ancestor=registry.access.redhat.com/ubi8/php-73 --format="{{.ID}}") || true

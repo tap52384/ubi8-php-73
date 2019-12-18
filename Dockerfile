@@ -1,5 +1,7 @@
 # https://access.redhat.com/containers/?tab=images&get-method=unauthenticated#/registry.access.redhat.com/ubi8/php-73
-# docker build --pull -t ubi8-php73:latest ~/code/ubi8-php-73
+# https://github.com/sclorg/s2i-php-container/tree/master/7.3
+# https://access.redhat.com/containers/?architecture&tab=docker-file#/registry.access.redhat.com/ubi8/php-73/images/1-18
+# docker build --pull -t tap52384:ubi8-php-73 ~/code/ubi8-php-73
 FROM registry.access.redhat.com/ubi8/php-73
 
 # Add necessary labels
@@ -145,7 +147,7 @@ ENV NSS_WRAPPER_GROUP=/etc/group
 # Switch back to non-root user
 USER 1001
 
-# Configure additional path for MSSQL tools.
+# Configure additional path for MSSQL tools
 ENV PATH=$PATH:/opt/mssql-tools/bin
 
 # Set the default CMD to print the usage of the language image
