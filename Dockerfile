@@ -143,8 +143,9 @@ ENV NSS_WRAPPER_GROUP=/etc/group
 # Switch back to non-root user
 USER 1001
 
-# Configure additional path for MSSQL tools
+# Configure additional path for MSSQL tools, Composer
 ENV PATH=$PATH:/opt/mssql-tools/bin
+ENV PATH=$PATH:$HOME/.composer/vendor/bin
 
 # Set the default CMD to print the usage of the language image
 CMD $STI_SCRIPTS_PATH/usage
