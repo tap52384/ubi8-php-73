@@ -153,10 +153,11 @@ ENV PATH=$PATH:/opt/mssql-tools/bin
 ENV PATH=$PATH:$HOME/.composer/vendor/bin
 ENV NVM_DIR=$HOME/.nvm
 
+# Set the default CMD to print the usage of the language image
 # Install Composer, NVM, and NPM 8 (for GoDaddy compatibility)
 # NVM allows you to install node.js on GoDaddy without root; missing dependencies
 # limit you to 8.x
-RUN curl -sS https://getcomposer.org/installer | php && \
+CMD [ "/bin/bash", "-c", "curl -sS https://getcomposer.org/installer | php && \
     php composer.phar global require laravel/installer && \
     touch ~/.bash_profile && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.bash_profile && \
@@ -166,7 +167,5 @@ RUN curl -sS https://getcomposer.org/installer | php && \
     command -v nvm && \
     nvm --version && \
     nvm install 8.17.0 && \
-    npm -v
-
-# Set the default CMD to print the usage of the language image
-CMD $STI_SCRIPTS_PATH/usage
+    npm -v && \
+    $STI_SCRIPTS_PATH/usage"]
