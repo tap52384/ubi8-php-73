@@ -133,7 +133,10 @@ RUN cp /opt/app-root/etc/ubi7.repo /etc/yum.repos.d/ubi7.repo && \
     chmod -R a+rwx /usr/sbin/httpd && \
     # chmod -R a+rwx /opt/rh/httpd24/root/var/run/httpd && \
     cp /etc/openldap/ldap.conf /etc/openldap/ldap.conf.rpm && \
-    mv /opt/app-root/etc/ldap.conf /etc/openldap/ldap.conf
+    mv /opt/app-root/etc/ldap.conf /etc/openldap/ldap.conf && \
+    # Enable line numbers and syntax highlighting in vi by default
+    cp -v /opt/app-root/etc/.exrc /opt/app-root/src/ && \
+    echo 'so ~/.exrc' > /opt/app-root/src/.vimrc
 
 # Set associated nss_wrapper environment variables.
 ENV LD_PRELOAD=/usr/lib64/libnss_wrapper.so
