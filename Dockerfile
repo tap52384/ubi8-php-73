@@ -136,7 +136,8 @@ RUN cp /opt/app-root/etc/ubi7.repo /etc/yum.repos.d/ubi7.repo && \
     mv /opt/app-root/etc/ldap.conf /etc/openldap/ldap.conf && \
     # Enable line numbers and syntax highlighting in vi by default
     cp -v /opt/app-root/etc/.exrc /opt/app-root/src/ && \
-    echo 'so ~/.exrc' > /opt/app-root/src/.vimrc
+    echo 'so ~/.exrc' > /opt/app-root/src/.vimrc && \
+    localedef -i en_US -f UTF-8 en_US.UTF-8
 
 # Set associated nss_wrapper environment variables.
 ENV LD_PRELOAD=/usr/lib64/libnss_wrapper.so
