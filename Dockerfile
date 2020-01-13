@@ -155,4 +155,4 @@ ENV PATH=$PATH:$HOME/.composer/vendor/bin
 ENV NVM_DIR=$HOME/.nvm
 
 # Set the default CMD to print the usage of the language image
-CMD source ~/.bash_profile && $STI_SCRIPTS_PATH/usage
+CMD $STI_SCRIPTS_PATH/usage
